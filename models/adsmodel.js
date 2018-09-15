@@ -148,6 +148,7 @@ exports.user_ads_list= function(q,userid){
 				'ad_image_2':'$ad_image_2',
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
+				'show_text':'$show_text',
 	
 			}
 		},

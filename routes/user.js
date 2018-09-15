@@ -272,9 +272,12 @@ var common = require('../lib/common');
 						phone:phone,
 						description:description,
 						address:address,
-						profile_image:imageName,
 						update_date:new Date()
 					};
+
+					if(imageName != undefined && imageName != '')
+					update_array.profile_image = imageName;
+
 					apimodel.update_user(q,update_array,userid).then(function(results){
 						    message.message = req.__('update_success');
 						    message.details = inputParams;
