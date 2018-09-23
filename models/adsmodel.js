@@ -116,13 +116,21 @@ exports.check_login= function(q,username){
 	 return deferred.promise;
 }
 
-exports.user_ads_list= function(q,userid){
+exports.user_ads_list= function(q,userid,search){
 	var deferred = q.defer();
 
 	let match_array = {
 	'user_id':ObjectId(userid),
 	'ad_status' : {'$nin':['B','T']}
 	};
+
+	if(typeof(search.hashtags) != 'undefined')
+	{
+		match_array =  { $text: { $search: search.hashtags } }
+
+	}
+
+	console.log("matcharray",match_array);
 
   var arguments = [
 		 {

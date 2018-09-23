@@ -218,9 +218,10 @@ var forEach = require('async-foreach').forEach;
 			console.log("herere");
 		  	var message = {};
 
-		  	//var inputParams = req.body;
+		  	var inputParams = req.body;
+		  	console.log(inputParams);
 
-		  	adsmodel.user_ads_list(q,userid).then(function(adresults){
+		  	adsmodel.user_ads_list(q,userid,inputParams).then(function(adresults){
 		  			try
 		  			{
 		  				
