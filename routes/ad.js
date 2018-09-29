@@ -4,6 +4,7 @@ var express = require('express'),
 var validate=require('../lib/validate.js');
 var config=require('../config/config.js');
 var adsmodel = require('../models/adsmodel');
+var hashtagmodel = require('../models/hashtagmodel');
 var common = require('../lib/common');
 var q= require('q');
 const {ObjectId} = require('mongodb'); // or ObjectID 
@@ -51,6 +52,7 @@ var forEach = require('async-foreach').forEach;
 				var userid = jwtDetails.id;
 				var adImages = inputParams.adImages;
 				var adText = inputParams.adtextarea;
+				var coordinates = inputParams.coordinates;
 				var adImageValues = [];
 				//adImages.forEach(function(element) {
 				common.multipleImageUpload(q,adImages,userid).then(function(adImageValues){
@@ -59,14 +61,35 @@ var forEach = require('async-foreach').forEach;
 						console.log('adImageValues',adImageValues);
 					try
 					{
+					hashtags.forEach(function(element)
+						{
+							var tag = element.replace('#','');
+							hashtagmodel.checkHashtag(q,tag).then(function(checkHashtagResults)
+							{
+								if(checkHashtagResults.length == 0)
+								{
+									hashtagmodel.insertHashtag(q,{'hashtag':tag,'hashtag_status':'A'}).then(function(insertHashtagResults)
+									{
+									})
+								}
+							})
+						})
+					}
+					catch(err)
+					{
+						console.log(err);
+					}	
+					try
+					{
 					var insert_array = {
 						'ad_text':adText,
-						'created_date':common.currentTimestamp(),
+						'created_date':common.currentDate(),
 						'user_id':ObjectId(userid),
 						'ad_image_1':adImageValues[0],
 						'ad_image_2':adImageValues[1],
 						'ad_image_3':adImageValues[2],
 						'ad_image_4':adImageValues[3],
+						'coordinates':coordinates,
 						'show_text':show_text,
 						'hastags':hashtags
 					}
@@ -141,12 +164,33 @@ var forEach = require('async-foreach').forEach;
 				var userid = jwtDetails.id;
 				var adImages = inputParams.adImages;
 				var adText = inputParams.adtextarea;
+				var coordinates = inputParams.coordinates;
 				var adImageValues = [];
 				//adImages.forEach(function(element) {
 				common.multipleImageUpload(q,adImages,userid).then(function(adImageValues){
 					common.extractHastags(q,adText).then(function(hashtags){
 						common.replaceHastags(q,adText,hashtags).then(function(show_text){
 
+					try
+					{
+					hashtags.forEach(function(element)
+						{
+							var tag = element.replace('#','');
+							hashtagmodel.checkHashtag(q,tag).then(function(checkHashtagResults)
+							{
+								if(checkHashtagResults.length == 0)
+								{
+									hashtagmodel.insertHashtag(q,{'hashtag':tag,'hashtag_status':'A'}).then(function(insertHashtagResults)
+									{
+									})
+								}
+							})
+						})
+					}
+					catch(err)
+					{
+						console.log(err);
+					}
 							console.log('adImageValues',adImageValues);
 						try
 						{
@@ -156,6 +200,8 @@ var forEach = require('async-foreach').forEach;
 							'user_id':ObjectId(userid),
 							'hastags':hashtags,
 							'show_text':show_text,
+							'coordinates':coordinates,
+
 						}
 
 						if(adImageValues[0] != undefined)
@@ -221,6 +267,48 @@ var forEach = require('async-foreach').forEach;
 		  	var inputParams = req.body;
 		  	console.log(inputParams);
 
+		  	adsmodel.ads_list(q,userid,inputParams).then(function(adresults){
+		  			try
+		  			{
+		  				
+		  				common.loopAdList(q,adresults).then(function(adList){
+						message.message = req.__('success');
+						message.details = adList;
+						res.status(200).send(message);
+						});
+		  			}
+		  			catch(err)
+		  			{
+		  				console.log(err);
+		  			}
+
+					});
+		}
+		else
+		{
+			res.status(validateResults.status).send(validateResults.message);
+		}
+
+	});
+	});
+
+  router.post('/mylist', function (req, res) {
+
+  	common.jwtTokenValidation(q,req).then(function(validateResults){
+
+		if(validateResults.status == 200)
+		{
+
+			var jwtDetails = validateResults.details;
+
+			var userid = jwtDetails.id;
+
+			console.log("herere");
+		  	var message = {};
+
+		  	var inputParams = req.body;
+		  	console.log(inputParams);
+
 		  	adsmodel.user_ads_list(q,userid,inputParams).then(function(adresults){
 		  			try
 		  			{
@@ -245,6 +333,9 @@ var forEach = require('async-foreach').forEach;
 
 	});
 	});
+
+
+
 
 	router.post('/detail/:id', function (req, res) {
 

@@ -3,21 +3,6 @@ var t=require('../config/table_config.json');
 const {ObjectId} = require('mongodb'); // or ObjectID 
 
 
-exports.insert_ads= function(q,insertArray){
-	var deferred = q.defer();
-
-	var collection = db.get().collection(t.MG_ADS);
-
-	collection.insert(insertArray,function(err, results) {
-		//console.log(results);
-	 	deferred.resolve(results);
-		deferred.makeNodeResolver()
-		result=null;
-	  });
-
-	 return deferred.promise;
-}
-
 
 exports.check_email_exists= function(q,data){
 	var deferred = q.defer();
@@ -96,16 +81,15 @@ exports.update_user= function(q,updateArray,userid){
 	 return deferred.promise;
 }
 
-exports.check_login= function(q,username){
+exports.checkHashtag= function(q,tag){
 	var deferred = q.defer();
 
 	let match_array = {
-	'$or':[{"phone":username},{"username":username},{"email":username}],
-//	'password':password
+	'hashtag':tag
 	};
 	console.log(match_array);
 
-	var collection = db.get().collection(t.MG_USERS);
+	var collection = db.get().collection(t.MG_HASHTAGS);
 	collection.find(match_array).toArray(function(err, results) {
 		console.log(err);
 	 	deferred.resolve(results);
@@ -116,18 +100,32 @@ exports.check_login= function(q,username){
 	 return deferred.promise;
 }
 
-exports.user_ads_list= function(q,userid,search){
+exports.insertHashtag= function(q,insertArray){
+	var deferred = q.defer();
+
+	var collection = db.get().collection(t.MG_HASHTAGS);
+
+	collection.insert(insertArray,function(err, results) {
+		//console.log(results);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+exports.hashtagList= function(q,search){
 	var deferred = q.defer();
 
 	let match_array = {
-	'user_id':ObjectId(userid),
-	'ad_status' : {'$nin':['B','T']}
+	'hashtag_status' : {'$nin':['B','T']}
 	};
 
-	if(typeof(search.hashtags) != 'undefined')
+	if(typeof(search.keyword) != 'undefined')
 	{
-		match_array =  { $text: { $search: search.hashtags } }
-
+		//match_array =  { $text: { $search: search.keyword } }
+		match_array = {'hashtag':{'$regex':new RegExp(search.keyword)}}
 	}
 
 	console.log("matcharray",match_array);
@@ -137,31 +135,14 @@ exports.user_ads_list= function(q,userid,search){
 			'$match': match_array,
 		},
 		{
-			'$lookup':{
-                    'from': t.MG_USERS,
-                    'localField': 'user_id',
-                    'foreignField':'_id',
-                    'as':'user',
-             },
-         },
-         {'$unwind':'$user'},
-		 {
 			'$project':{
 				'_id':1,
-				'ad_text':'$ad_text',
-				'created_date':'$created_date',
-				'username':'$user.username',
-				'profileImage':'$user.profile_image',
-				'ad_image_1':'$ad_image_1',
-				'ad_image_2':'$ad_image_2',
-				'ad_image_3':'$ad_image_3',
-				'ad_image_4':'$ad_image_4',
-				'show_text':'$show_text',
+				'hashtag':'$hashtag',
 	
 			}
-		},
+		}
 	];
-	var collection = db.get().collection(t.MG_ADS);
+	var collection = db.get().collection(t.MG_HASHTAGS);
 	 collection.aggregate(arguments).toArray(function(err, results) {
 		console.log('err',err);
 	 	deferred.resolve(results);
@@ -236,69 +217,3 @@ exports.update_ads= function(q,updateArray,adId){
 	 return deferred.promise;
 }
 
-
-exports.ads_list= function(q,userid,search){
-	var deferred = q.defer();
-
-	let match_array = {
-	'user_id':{'$ne':ObjectId(userid)},
-	'ad_status' : {'$nin':['B','T']}
-	};
-
-	if(typeof(search.hashtags) != 'undefined')
-	{
-		match_array =  { $text: { $search: search.hashtags } }
-
-	}
-
-	console.log("matcharray",match_array);
-
-  var arguments = [
-		 {
-			'$match': match_array,
-		},
-		{
-			'$lookup':{
-                    'from': t.MG_USERS,
-                    'localField': 'user_id',
-                    'foreignField':'_id',
-                    'as':'user',
-             },
-         },
-         {'$unwind':'$user'},
-         {'$unwind':'$hastags'},
-		 {
-			'$project':{
-				'_id':1,
-				'ad_text':'$ad_text',
-				'created_date':'$created_date',
-				'created_date_format':{
-				'$dateFromString': {
-            	'dateString': '$created_date',
-            	'timezone': 'Asia/Kolkata',
-           	    'format': "%d-%m-%Y",
-                'onError': '$created_date'
-
-         		}
-         		},
-				'username':'$user.username',
-				'profileImage':'$user.profile_image',
-				'ad_image_1':'$ad_image_1',
-				'ad_image_2':'$ad_image_2',
-				'ad_image_3':'$ad_image_3',
-				'ad_image_4':'$ad_image_4',
-				'show_text':'$show_text',
-				'hastags':'$hastags',
-	
-			}
-		},
-	];
-	var collection = db.get().collection(t.MG_ADS);
-	 collection.aggregate(arguments).toArray(function(err, results) {
-		console.log('err',err);
-	 	deferred.resolve(results);
-		result=null;
-	  });
-
-	 return deferred.promise;
-}
