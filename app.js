@@ -24,6 +24,7 @@ var apimodel = require('./models/apimodel');
 var user = require('./routes/user');
 var ad = require('./routes/ad');
 var hashtag = require('./routes/hashtag');
+var message = require('./routes/message');
 
 
 app.use(expressValidator());
@@ -122,6 +123,7 @@ app.io           = io;
 app.use('/api/user',user);
 app.use('/api/ad',ad);
 app.use('/api/hashtag',hashtag);
+app.use('/api/message',message);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

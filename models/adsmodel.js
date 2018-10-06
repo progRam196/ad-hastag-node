@@ -204,6 +204,7 @@ exports.ad_details= function(q,adId){
 				'ad_image_2':'$ad_image_2',
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
+				'message_list':'$message_list',
 	
 			}
 		},
@@ -245,9 +246,9 @@ exports.ads_list= function(q,userid,search){
 	'ad_status' : {'$nin':['B','T']}
 	};
 
-	if(typeof(search.hashtags) != 'undefined')
+	if(typeof(search.hashtags) != 'undefined' && search.hashtags != '' )
 	{
-		match_array =  { $text: { $search: search.hashtags } }
+		match_array.$text = { $search: search.hashtags } 
 
 	}
 
@@ -266,7 +267,7 @@ exports.ads_list= function(q,userid,search){
              },
          },
          {'$unwind':'$user'},
-         {'$unwind':'$hastags'},
+        // {'$unwind':'$hastags'},
 		 {
 			'$project':{
 				'_id':1,
@@ -288,11 +289,77 @@ exports.ads_list= function(q,userid,search){
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
 				'show_text':'$show_text',
-				'hastags':'$hastags',
+				'hastags':'$hastags'
 	
 			}
 		},
 	];
+	var collection = db.get().collection(t.MG_ADS);
+	 collection.aggregate(arguments).toArray(function(err, results) {
+		console.log('err',err);
+	 	deferred.resolve(results);
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+
+exports.updateMessage= function(q,message_array,adId){
+	var deferred = q.defer();
+
+	let match_array = {
+		'_id':ObjectId(adId),
+	};
+
+	console.log(match_array);
+	var collection = db.get().collection(t.MG_ADS);
+	collection.update(match_array,{'$push':{'message_list':message_array}},{ upsert: false }
+,function(err, results) {
+		console.log('err',err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+exports.message_details= function(q,adId){
+	var deferred = q.defer();
+
+	let match_array = {
+	'_id':ObjectId(adId)
+	};
+
+	console.log(adId);
+
+  var arguments = [
+		 {
+			'$match': match_array,
+		},
+        {'$unwind':'$message_list'},
+		{
+			'$lookup':{
+                    'from': t.MG_USERS,
+                    'localField': 'message_list.userid',
+                    'foreignField':'_id',
+                    'as':'user',
+             },
+         },
+         {'$unwind':'$user'},
+		 {
+			'$project':{
+				'_id':1,
+				'message':'$message_list.message',
+				'message_create_date':'$message_list.created_date',
+				'user_profile':'$user.profile_image',
+				'username':'$user.username',
+	
+			}
+		},
+	];
+
 	var collection = db.get().collection(t.MG_ADS);
 	 collection.aggregate(arguments).toArray(function(err, results) {
 		console.log('err',err);

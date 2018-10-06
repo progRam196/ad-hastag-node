@@ -364,9 +364,18 @@ var forEach = require('async-foreach').forEach;
 							adresults[i].profileImage = common.profileExists(adresults[i].profileImage);
 							i++;
 						});
-						message.message = req.__('success');
-						message.details = adresults[0];
-						res.status(200).send(message);
+						adsmodel.message_details(q,adId).then(function(messageResults){
+							var i =0 ;
+			  				messageResults.forEach(function(element) {
+			  				messageResults[i].profileImage = common.profileExists(element.user_profile);
+			  				i++;
+			  				})
+							message.message = req.__('success');
+							message.details = adresults[0];
+							message.details.message_list = messageResults;
+							res.status(200).send(message);
+
+						})
 
 					});
 		}
