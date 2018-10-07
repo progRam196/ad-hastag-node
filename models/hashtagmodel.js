@@ -122,7 +122,7 @@ exports.hashtagList= function(q,search){
 	'hashtag_status' : {'$nin':['B','T']}
 	};
 
-	if(typeof(search.keyword) != 'undefined')
+	if(typeof(search.keyword) != 'undefined' && search.keyword != '')
 	{
 		//match_array =  { $text: { $search: search.keyword } }
 		match_array = {'hashtag':{'$regex':new RegExp(search.keyword)}}
@@ -138,8 +138,12 @@ exports.hashtagList= function(q,search){
 			'$project':{
 				'_id':1,
 				'hashtag':'$hashtag',
+				'count':{ '$ifNull': [ "$count", 0 ]},
 	
 			}
+		},
+		{
+			'$sort':{'count':-1}
 		}
 	];
 	var collection = db.get().collection(t.MG_HASHTAGS);
@@ -217,3 +221,20 @@ exports.update_ads= function(q,updateArray,adId){
 	 return deferred.promise;
 }
 
+
+exports.updateCount= function(q,hashtagID){
+	var deferred = q.defer();
+
+	let match_array = {
+		'_id':ObjectId(hashtagID),
+	};
+	var collection = db.get().collection(t.MG_USERS);
+	collection.update(match_array,{'$inc':{'count':parseInt(1)}},function(err, results) {
+		console.log('err',err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
