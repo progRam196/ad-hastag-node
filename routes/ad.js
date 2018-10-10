@@ -275,7 +275,7 @@ var forEach = require('async-foreach').forEach;
 
 			var userid = jwtDetails.id;
 
-			console.log("herere");
+			console.log("herere ad list");
 		  	var message = {};
 
 		  	var inputParams = req.body;

@@ -248,7 +248,7 @@ exports.ads_list= function(q,userid,search){
 
 	if(typeof(search.hashtags) != 'undefined' && search.hashtags != '' )
 	{
-		match_array.$text = { $search: search.hashtags } 
+		match_array.$text = { $search: search.hashtags.join(' ') } 
 
 	}
 
