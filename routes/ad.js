@@ -66,9 +66,10 @@ var forEach = require('async-foreach').forEach;
 							var tag = element.replace('#','');
 							hashtagmodel.checkHashtag(q,tag).then(function(checkHashtagResults)
 							{
+								console.log(checkHashtagResults);
 								if(checkHashtagResults.length == 0)
 								{
-									hashtagmodel.insertHashtag(q,{'hashtag':tag,'hashtag_status':'A'}).then(function(insertHashtagResults)
+									hashtagmodel.insertHashtag(q,{'hashtag':tag,'hashtag_status':'A',count:parseInt(1)}).then(function(insertHashtagResults)
 									{
 									})
 								}
@@ -187,7 +188,7 @@ var forEach = require('async-foreach').forEach;
 							{
 								if(checkHashtagResults.length == 0)
 								{
-									hashtagmodel.insertHashtag(q,{'hashtag':tag,'hashtag_status':'A'}).then(function(insertHashtagResults)
+									hashtagmodel.insertHashtag(q,{'hashtag':tag,'hashtag_status':'A',count:parseInt(1)}).then(function(insertHashtagResults)
 									{
 									})
 								}

@@ -3,11 +3,17 @@ var express = require('express'),
 
 var validate=require('../lib/validate.js');
 var config=require('../config/config.js');
+var emaillib=require('../lib/email.js');
 var apimodel = require('../models/apimodel');
 var q= require('q');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var common = require('../lib/common');
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(config.secret);
+var randomstring = require("randomstring");
+var text2png = require('text2png');
+var fs = require('fs');
 
 
 
@@ -89,14 +95,21 @@ var common = require('../lib/common');
 					  		{
 							  var hashedPassword = bcrypt.hashSync(password, 8);
 
+							  var colors = config.colors[Math.floor(Math.random() * config.colors.length)];
+							  var imageName = username+'.png';
+							  fs.writeFileSync(config.docroot+'/public/uploads/profile/'+imageName, text2png(username.charAt(0).toUpperCase(), {padding: 30, backgroundColor: colors,
+color: 'white'}));
+
 							  var insert_array = {
 							    username : username,
 							    email : email,
 							    phone : phone,
 							    password : hashedPassword,
 							    org_password : password,
+							    profile_image:imageName,
 							    user_status : 'A'
 							  };
+							  
 
 							  apimodel.insert_user(q,insert_array).then(function(results){
 							    //if (err) return res.status(500).send("There was a problem registering the user.")
@@ -348,5 +361,163 @@ var common = require('../lib/common');
 		}
 	});
 });
+
+ router.post('/reset-password', function (req, res) {
+
+  	var message = {};
+
+  	var inputParams = req.body;
+
+  	var validate_error  = validate.resetpassword(q,inputParams);
+
+
+	if(validate_error != undefined)
+	{
+		if(validate_error)
+		{
+			var error = validate_error;
+			res.status(400).send(error);
+
+		}
+		else
+		{
+			var error= req.__('validation_error');
+			res.status(400).send(error);
+		}
+	}
+	else
+	{
+		try
+		{
+		var resetcode = inputParams.resetcode;
+		var password = inputParams.newpassword;
+		var repassword = inputParams.confirmpassword;
+		const decryptedString = cryptr.decrypt(resetcode);
+
+		console.log(decryptedString);
+
+			apimodel.check_resetcode_exists(q,decryptedString).then(function(findresults){
+
+				if(findresults.length > 0)
+				{
+
+					var userid = findresults[0]._id;
+					try
+					{
+					var hashedPassword = bcrypt.hashSync(password, 8);
+
+					var update_array = {
+					password : hashedPassword,
+					org_password : password,
+					resetcode:''
+					};
+
+					apimodel.update_user(q,update_array,userid).then(function(results){
+						//if (err) return res.status(500).send("There was a problem registering the user.")
+						// create a token
+						// if(results.ops.length > 0)
+						// {	
+						message.message = req.__('password_reset_success');
+						res.status(200).send(message);
+						// }
+						// else
+						// {
+						// message = req.__('failed');
+						// res.status(500).send(message);
+
+						//}
+					});
+					}
+					catch(err)
+					{
+					console.log(err);
+					}
+				}
+				else
+				{
+					message.message = req.__('password_reset_failed');
+					res.status(400).send(message);
+				}
+			});
+		}
+		catch(err)
+		{
+			console.log(err);
+		}
+
+	}
+  });
+
+router.post('/resetlink', function (req, res) {
+
+  	var message = {};
+
+  	var inputParams = req.body;
+
+  	var validate_error  = validate.resetlink(q,inputParams);
+
+
+	if(validate_error != undefined)
+	{
+		if(validate_error)
+		{
+			var error = validate_error;
+			res.status(400).send(error);
+
+		}
+		else
+		{
+			var error= req.__('validation_error');
+			res.status(400).send(error);
+		}
+	}
+	else
+	{
+		var username = inputParams.username;
+
+			apimodel.check_user_exists(q,username).then(function(userresults){
+
+						if(userresults.length > 0)
+						{
+							try
+							{
+							var userid = userresults[0]._id;
+							var email = userresults[0].email;
+							var resetcode = randomstring.generate({
+							  length: 12,
+							  charset: 'alphabetic'
+							});
+							var update_array = {'resetcode':resetcode};
+
+							apimodel.update_user(q,update_array,userid).then(function(results){
+								try
+								{
+							const encryptedString = cryptr.encrypt(resetcode);
+							var resetlink = config.baseurl+'change-password/'+encryptedString;
+							var msg = "Click below link to reset password. <a href='"+resetlink+"'>Reset Link</a>"
+							emaillib.sendEmail(email,msg);
+							message = req.__('reset_email_sent');
+							res.status(200).send(message);
+						}
+						catch(err)
+						{
+							console.log(err);
+						}
+							})
+							}
+							catch(err)
+							{
+								console.log(err);
+							}
+						}
+						else
+						{
+							message = req.__('enter_valid_username');
+							res.status(500).send(message);
+						}
+
+			});
+	}
+  });
 
 module.exports = router;

@@ -228,7 +228,8 @@ exports.updateCount= function(q,hashtagID){
 	let match_array = {
 		'_id':ObjectId(hashtagID),
 	};
-	var collection = db.get().collection(t.MG_USERS);
+	console.log(match_array);
+	var collection = db.get().collection(t.MG_HASHTAGS);
 	collection.update(match_array,{'$inc':{'count':parseInt(1)}},function(err, results) {
 		console.log('err',err);
 	 	deferred.resolve(results);

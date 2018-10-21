@@ -148,3 +148,44 @@ exports.userDetails= function(q,userid){
 
 	 return deferred.promise;
 }
+
+
+exports.check_user_exists= function(q,data){
+	var deferred = q.defer();
+
+	let match_array = {
+		'$or':[
+		{"email":data},
+		{"phone":data},
+		{"username":data}
+		]
+	};
+
+	var collection = db.get().collection(t.MG_USERS);
+	collection.find(match_array).toArray(function(err, results) {
+		console.log(err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+exports.check_resetcode_exists= function(q,data){
+	var deferred = q.defer();
+
+	let match_array = {
+		'resetcode':data
+	};
+
+	var collection = db.get().collection(t.MG_USERS);
+	collection.find(match_array).toArray(function(err, results) {
+		console.log(err);
+		console.log(results);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
