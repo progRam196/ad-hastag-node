@@ -53,6 +53,9 @@ var forEach = require('async-foreach').forEach;
 				var adImages = inputParams.adImages;
 				var adText = inputParams.adtextarea;
 				var coordinates = inputParams.coordinates;
+				var websitelink = inputParams.websitelink;
+				var city = inputParams.city;
+
 				var adImageValues = [];
 				//adImages.forEach(function(element) {
 				common.multipleImageUpload(q,adImages,userid).then(function(adImageValues){
@@ -99,7 +102,9 @@ var forEach = require('async-foreach').forEach;
 						'ad_image_4':adImageValues[3],
 						'coordinates':coordinates,
 						'show_text':show_text,
-						'hastags':hashtags
+						'hastags':hashtags,
+						'websitelink':websitelink,
+						'city':city
 					}
 					}
 					catch(err)
@@ -173,6 +178,8 @@ var forEach = require('async-foreach').forEach;
 				var adImages = inputParams.adImages;
 				var adText = inputParams.adtextarea;
 				var coordinates = inputParams.coordinates;
+				var websitelink = inputParams.websitelink;
+				var city = inputParams.city;
 				var adImageValues = [];
 				//adImages.forEach(function(element) {
 				common.multipleImageUpload(q,adImages,userid).then(function(adImageValues){
@@ -216,6 +223,8 @@ var forEach = require('async-foreach').forEach;
 							'hastags':hashtags,
 							'show_text':show_text,
 							'coordinates':coordinates,
+							'websitelink':websitelink,
+							'city':city
 
 						}
 

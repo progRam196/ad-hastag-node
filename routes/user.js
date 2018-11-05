@@ -61,7 +61,7 @@ var fs = require('fs');
 							{
 							var error={};
 							error.email = req.__('email_exists');
-							res.status(400).send(error);
+							res.status(401).send(error);
 							}
 							catch(err)
 							{
@@ -74,7 +74,7 @@ var fs = require('fs');
 							{
 							var error={};
 							error.username = req.__('username_exists');
-							res.status(400).send(error);
+							res.status(401).send(error);
 							}
 							catch(err)
 							{
@@ -86,7 +86,7 @@ var fs = require('fs');
 						{
 							var error={};
 							error.phone = req.__('phone_exists');
-							res.status(400).send(error);
+							res.status(401).send(error);
 
 						}
 						else
@@ -194,7 +194,11 @@ color: 'white'}));
 				    console.log(results);
 				    if(results.length > 0)
 				   {	
+				   	try
+				   	{
 				   		var fetch_password = results[0].password;
+				   		console.log(hashedPassword);
+				   		console.log(fetch_password);
 				  		var passwordIsValid = bcrypt.compareSync(hashedPassword, fetch_password);
 	    				if (!passwordIsValid)
 	    				{
@@ -220,6 +224,11 @@ color: 'white'}));
 							message = req.__('failed');
 						    res.status(401).send(message);
 						}
+					}
+					catch(err)
+					{
+						console.log(err);
+					}
 					}
 					else
 					{
@@ -258,13 +267,13 @@ color: 'white'}));
 			if(validate_error)
 			{
 				var error = validate_error;
-				res.status(400).send(error);
+				res.status(401).send(error);
 
 			}
 			else
 			{
 				var error= req.__('validation_error');
-				res.status(400).send(error);
+				res.status(401).send(error);
 			}
 		}
 		else

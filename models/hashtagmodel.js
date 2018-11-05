@@ -189,6 +189,7 @@ exports.ad_details= function(q,adId){
 				'ad_image_2':'$ad_image_2',
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
+				'websitelink':{'$ifNull':['$websitelink','']},
 	
 			}
 		},
@@ -196,6 +197,7 @@ exports.ad_details= function(q,adId){
 	var collection = db.get().collection(t.MG_ADS);
 	 collection.aggregate(arguments).toArray(function(err, results) {
 		console.log('err',err);
+		console.log('results',results);
 	 	deferred.resolve(results);
 		result=null;
 	  });

@@ -150,6 +150,15 @@ exports.user_ads_list= function(q,userid,search){
 				'_id':1,
 				'ad_text':'$ad_text',
 				'created_date':'$created_date',
+				'created_date_format':{
+				'$dateFromString': {
+            	'dateString': '$created_date',
+            	'timezone': 'Asia/Kolkata',
+           	    'format': "%d-%m-%Y",
+                'onError': '$created_date'
+
+         		}
+         		},
 				'username':'$user.username',
 				'profileImage':'$user.profile_image',
 				'ad_image_1':'$ad_image_1',
@@ -157,9 +166,14 @@ exports.user_ads_list= function(q,userid,search){
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
 				'show_text':'$show_text',
+				'hastags':'$hastags',
+				'websitelink':{'$ifNull':['$websitelink','']},
+				'city':{'$ifNull':['$city','']}
 	
 			}
 		},
+		{ '$sort' : { 'created_date' : -1 } }
+
 	];
 	var collection = db.get().collection(t.MG_ADS);
 	 collection.aggregate(arguments).toArray(function(err, results) {
@@ -205,6 +219,9 @@ exports.ad_details= function(q,adId){
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
 				'message_list':'$message_list',
+				'websitelink':{'$ifNull':['$websitelink','']},
+				'city':{'$ifNull':['$city','']}
+
 	
 			}
 		},
@@ -289,10 +306,15 @@ exports.ads_list= function(q,userid,search){
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
 				'show_text':'$show_text',
-				'hastags':'$hastags'
+				'hastags':'$hastags',
+				'websitelink':{'$ifNull':['$websitelink','']},
+				'city':{'$ifNull':['$city','']}
+
 	
 			}
 		},
+		{ '$sort' : { 'created_date' : -1 } }
+			
 	];
 	var collection = db.get().collection(t.MG_ADS);
 	 collection.aggregate(arguments).toArray(function(err, results) {

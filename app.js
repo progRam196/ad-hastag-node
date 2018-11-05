@@ -6,9 +6,7 @@ var express = require('express'),
   path = require('path'),
   favicon = require('serve-favicon'),
   cookieParser = require('cookie-parser'),
-  bodyParser = require('body-parser'),
-  api = require('./routes/api')(app);
-
+  bodyParser = require('body-parser');
 var db = require('./config/dbconnection');
 var dbconfig = require('./config/db.json');
 var md5 = require('md5');
@@ -25,6 +23,7 @@ var user = require('./routes/user');
 var ad = require('./routes/ad');
 var hashtag = require('./routes/hashtag');
 var message = require('./routes/message');
+var api = require('./routes/api');
 
 
 app.use(expressValidator());
@@ -108,9 +107,41 @@ const url = 'mongodb://'+username+':'+password+'@'+host+':'+port+'/?authMechanis
 
 db.connect(url,dbname,function(err) {
   if (err) {
+
     console.log('Unable to connect to Mongo.'+err)
     process.exit(1)
   } else {
+
+// apimodel.cityList(q).then(function(results)
+// {
+//   console.log(results[0].cities.length);
+// if(results[0].cities.length > 0)
+// { 
+//   try
+//   {
+//   var list = results[0].cities;
+//   list.forEach(function(element) {
+//   var insertarray = {
+//     '_id':parseInt(element.id),
+//     'name':element.name,
+//     'state_id':parseInt(element.state_id),
+//   };
+
+//     console.log(insertarray);
+
+  
+// apimodel.insertCity(q,insertarray).then(function(results){ });
+
+
+// });
+//   }
+// catch(err)
+// {
+//   console.log(err);
+// }
+
+// }
+// })
 
   	console.log(i18n.__('db_connect_success'));
   	}
@@ -120,6 +151,7 @@ db.connect(url,dbname,function(err) {
 app.io           = io;
 
 
+app.use('/api',api);
 app.use('/api/user',user);
 app.use('/api/ad',ad);
 app.use('/api/hashtag',hashtag);

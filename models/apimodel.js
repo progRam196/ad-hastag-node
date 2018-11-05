@@ -189,3 +189,40 @@ exports.check_resetcode_exists= function(q,data){
 
 	 return deferred.promise;
 }
+
+exports.cityList= function(q,data){
+	var deferred = q.defer();
+
+	if(typeof(data) != 'undefined')
+	{
+	var match_array = {'name':{'$regex':new RegExp(data)}};
+	}
+	else
+	{
+	var match_array = {};
+	}
+
+	var collection = db.get().collection(t.MG_CITY);
+	collection.find(match_array).limit(10).toArray(function(err, results) {
+		console.log(err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+exports.insertCity= function(q,insertArray){
+	var deferred = q.defer();
+
+	var collection = db.get().collection(t.MG_CITY);
+	collection.insert(insertArray,function(err, results) {
+		//console.log(results);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
