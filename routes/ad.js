@@ -326,6 +326,7 @@ var forEach = require('async-foreach').forEach;
 			var jwtDetails = validateResults.details;
 
 			var userid = jwtDetails.id;
+			var sessionId = jwtDetails.id;
 
 			console.log("herere");
 		  	var message = {};
@@ -333,11 +334,16 @@ var forEach = require('async-foreach').forEach;
 		  	var inputParams = req.body;
 		  	console.log(inputParams);
 
+		  	if(typeof(inputParams.userid) != 'undefined' != '')
+		  	{
+			 userid = inputParams.userid;
+		  	}
+
 		  	adsmodel.user_ads_list(q,userid,inputParams).then(function(adresults){
 		  			try
 		  			{
 		  				
-		  				common.loopAdList(q,adresults).then(function(adList){
+		  				common.loopAdList(q,adresults,sessionId).then(function(adList){
 						message.message = req.__('success');
 						message.details = adList;
 						res.status(200).send(message);

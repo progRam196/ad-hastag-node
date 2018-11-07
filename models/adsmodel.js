@@ -167,6 +167,7 @@ exports.user_ads_list= function(q,userid,search){
 				'ad_image_4':'$ad_image_4',
 				'show_text':'$show_text',
 				'hastags':'$hastags',
+				'userid':'$user_id',
 				'websitelink':{'$ifNull':['$websitelink','']},
 				'city':{'$ifNull':['$city','']}
 	
@@ -212,13 +213,24 @@ exports.ad_details= function(q,adId){
 				'_id':1,
 				'ad_text':'$ad_text',
 				'created_date':'$created_date',
+				'created_date_format':{
+				'$dateFromString': {
+            	'dateString': '$created_date',
+            	'timezone': 'Asia/Kolkata',
+           	    'format': "%d-%m-%Y",
+                'onError': '$created_date'
+
+         		}
+         		},
 				'username':'$user.username',
 				'profileImage':'$user.profile_image',
 				'ad_image_1':'$ad_image_1',
 				'ad_image_2':'$ad_image_2',
 				'ad_image_3':'$ad_image_3',
 				'ad_image_4':'$ad_image_4',
-				'message_list':'$message_list',
+				'show_text':'$show_text',
+				'hastags':'$hastags',
+				'userid':'$user_id',
 				'websitelink':{'$ifNull':['$websitelink','']},
 				'city':{'$ifNull':['$city','']}
 
@@ -266,7 +278,11 @@ exports.ads_list= function(q,userid,search){
 	if(typeof(search.hashtags) != 'undefined' && search.hashtags != '' )
 	{
 		match_array.$text = { $search: search.hashtags.join(' ') } 
-
+	}
+	console.log('search',search);
+	if(typeof(search.city) != 'undefined' && search.city != '' && search.city != null)
+	{
+		match_array.city = search.city; 
 	}
 
 	console.log("matcharray",match_array);
@@ -307,6 +323,7 @@ exports.ads_list= function(q,userid,search){
 				'ad_image_4':'$ad_image_4',
 				'show_text':'$show_text',
 				'hastags':'$hastags',
+				'userid':'$user_id',
 				'websitelink':{'$ifNull':['$websitelink','']},
 				'city':{'$ifNull':['$city','']}
 

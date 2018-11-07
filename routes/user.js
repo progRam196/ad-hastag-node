@@ -327,6 +327,13 @@ color: 'white'}));
 			var jwtDetails = validateResults.details;
 			var userid = jwtDetails.id;
 
+			var inputParams = req.body;
+
+			if(typeof(inputParams.userid) !=  'undefined' && inputParams.userid != '')
+			{
+				userid = inputParams.userid;
+			}
+
 		  	var message = {};
 
 		  	console.log(userid);
