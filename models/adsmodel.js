@@ -271,10 +271,13 @@ exports.ads_list= function(q,userid,search){
 	var deferred = q.defer();
 
 	let match_array = {
-	'user_id':{'$ne':ObjectId(userid)},
 	'ad_status' : {'$nin':['B','T']}
 	};
 
+	if(typeof(user_id) != 'undefined' && user_id != '' )
+	{
+	match_array.user_id={'$ne':ObjectId(userid)};
+	}
 	if(typeof(search.hashtags) != 'undefined' && search.hashtags != '' )
 	{
 		match_array.$text = { $search: search.hashtags.join(' ') } 

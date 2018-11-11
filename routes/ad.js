@@ -277,12 +277,17 @@ var forEach = require('async-foreach').forEach;
   router.post('/list', function (req, res) {
 
   	common.jwtTokenValidation(q,req).then(function(validateResults){
+  		console.log(validateResults.status);
 
-		if(validateResults.status == 200)
+		if(validateResults.status == 200 ||  validateResults.status == 401 )
 		{
+			try
+			{
 
 			var jwtDetails = validateResults.details;
+			var userid = '';
 
+			if(typeof(jwtDetaiils) != 'undefined')
 			var userid = jwtDetails.id;
 
 			console.log("herere ad list");
@@ -290,6 +295,11 @@ var forEach = require('async-foreach').forEach;
 
 		  	var inputParams = req.body;
 		  	console.log(inputParams);
+		  }
+		  catch(err)
+		  {
+		  	console.log(err);
+		  }
 
 		  	adsmodel.ads_list(q,userid,inputParams).then(function(adresults){
 		  			try
