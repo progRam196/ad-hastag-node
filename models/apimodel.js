@@ -132,10 +132,13 @@ exports.userDetails= function(q,userid){
 				'username':'$username',
 				'email':'$email',
 				'phone':'$phone',
+				'a':'$_id',
 				//'password':'$password',
 				'description': { $ifNull : ['$description','']},
 				'address': { $ifNull : ['$address','']},
-				'profileImage': { $ifNull : ['$profile_image','']}
+				'profileImage': { $ifNull : ['$profile_image','']},
+				'follower_list': { $ifNull : ['$follower_list',[]]},
+				'following_list': { $ifNull : ['$following_list',[]]}
 			}
 		},
 	];
@@ -219,6 +222,100 @@ exports.insertCity= function(q,insertArray){
 	var collection = db.get().collection(t.MG_CITY);
 	collection.insert(insertArray,function(err, results) {
 		//console.log(results);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+exports.siteSettings= function(q){
+	var deferred = q.defer();
+
+
+	var collection = db.get().collection(t.MG_SETTINGS);
+	collection.find({}).toArray(function(err, results) {
+		console.log(err);
+		console.log(results);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+exports.updateFollow= function(q,update_array,userId){
+	var deferred = q.defer();
+
+	let match_array = {
+		'_id':ObjectId(userId),
+	};
+
+	var collection = db.get().collection(t.MG_USERS);
+	collection.update(match_array,{'$push':{'follower_list':update_array}},{ upsert: false }
+,function(err, results) {
+		console.log('err',err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+exports.updateFollower= function(q,update_array,userId){
+	var deferred = q.defer();
+
+	let match_array = {
+		'_id':ObjectId(userId),
+	};
+
+	var collection = db.get().collection(t.MG_USERS);
+	collection.update(match_array,{'$push':{'following_list':update_array}},{ upsert: false }
+,function(err, results) {
+		console.log('err',err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+exports.removeFollower= function(q,checkuserId,userId){
+	var deferred = q.defer();
+
+	let match_array = {
+		'_id':ObjectId(checkuserId),
+	};
+
+	var collection = db.get().collection(t.MG_USERS);
+	collection.update(match_array,{'$pull':{'following_list':{userid:ObjectId(userId)}}},{ upsert: false }
+,function(err, results) {
+		console.log('err',err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+exports.removeFollow= function(q,checkuserId,userId){
+	var deferred = q.defer();
+
+	let match_array = {
+		'_id':ObjectId(checkuserId),
+	};
+
+	console.log({'$pull':{'follower_list':{userid:ObjectId(userId)}}});
+	console.log(match_array);
+
+	var collection = db.get().collection(t.MG_USERS);
+	collection.update(match_array,{'$pull':{'follower_list':{userid:ObjectId(userId)}}},{ upsert: false }
+,function(err, results) {
+		console.log('err',err);
 	 	deferred.resolve(results);
 		deferred.makeNodeResolver()
 		result=null;

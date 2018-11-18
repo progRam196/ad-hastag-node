@@ -24,6 +24,7 @@ var ad = require('./routes/ad');
 var hashtag = require('./routes/hashtag');
 var message = require('./routes/message');
 var api = require('./routes/api');
+var cmn = require('./routes/common');
 
 
 app.use(expressValidator());
@@ -152,6 +153,7 @@ app.io           = io;
 
 
 app.use('/api',api);
+app.use('/api/common/',cmn);
 app.use('/api/user',user);
 app.use('/api/ad',ad);
 app.use('/api/hashtag',hashtag);

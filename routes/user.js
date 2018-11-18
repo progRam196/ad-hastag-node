@@ -123,6 +123,12 @@ color: 'white'}));
 								    var token = jwt.sign({ id: userid },config.secret, {
 								      expiresIn: 86400 // expires in 24 hours
 								    });
+
+								    imageName=userid+userid.split("").reverse().join("")+'.png';
+									apimodel.update_user(q,{profile_image:imageName},userid).then(function(results){
+									});
+
+
 								    message = { auth: true, token: token };
 								    res.status(200).send(message);
 									}
@@ -326,6 +332,7 @@ color: 'white'}));
 			{
 			var jwtDetails = validateResults.details;
 			var userid = jwtDetails.id;
+			var sessionUserid = jwtDetails.id;
 
 			var inputParams = req.body;
 
@@ -347,6 +354,22 @@ color: 'white'}));
 						profiledetails.forEach(function(element) {
 							profiledetails[0].profileImage = common.profileExists(profiledetails[0].profileImage);
 						});
+
+						var follow = profiledetails[0].follower_list.filter(x => x.userid == sessionUserid);
+
+						if(follow.length > 0)
+						profiledetails[0].followStatus = parseInt(1);
+						else
+						profiledetails[0].followStatus = parseInt(0);
+
+						if(sessionUserid == userid)
+						profiledetails[0].selfStatus = parseInt(1);
+						else
+						profiledetails[0].selfStatus = parseInt(0);
+
+						profiledetails[0].imgurl = config.baseurl+'public/uploads/profile/';
+
+
 						delete profiledetails._id;
 
 					    message.message = req.__('success');
@@ -434,6 +457,7 @@ color: 'white'}));
 						// if(results.ops.length > 0)
 						// {	
 						message.message = req.__('password_reset_success');
+						console.log(message);
 						res.status(200).send(message);
 						// }
 						// else
@@ -509,10 +533,12 @@ router.post('/resetlink', function (req, res) {
 								try
 								{
 							const encryptedString = cryptr.encrypt(resetcode);
-							var resetlink = config.baseurl+'change-password/'+encryptedString;
-							var msg = "Click below link to reset password. <a href='"+resetlink+"'>Reset Link</a>"
+							var resetlink = config.baseurl+'auth/change-password/'+encryptedString;
+							var msg = "Click below link to reset password. <a href='"+resetlink+"'>Reset Link</a>";
+
+							console.log(msg);
 							emaillib.sendEmail(email,msg);
-							message = req.__('reset_email_sent');
+							message.message = req.__('reset_email_sent');
 							res.status(200).send(message);
 						}
 						catch(err)
@@ -535,5 +561,88 @@ router.post('/resetlink', function (req, res) {
 			});
 	}
   });
+
+router.post('/update-follow', function (req, res) {
+
+   	  	common.jwtTokenValidation(q,req).then(function(validateResults){
+
+   	  	if(validateResults.status == 200)
+		{
+
+		var jwtDetails = validateResults.details;
+		var userid = jwtDetails.id;
+
+	  	var message = {};
+
+	  	var inputParams = req.body;
+
+	  	var validate_error  = validate.follow(q,inputParams);
+
+
+		if(validate_error != undefined)
+		{
+			if(validate_error)
+			{
+				var error = validate_error;
+				res.status(401).send(error);
+
+			}
+			else
+			{
+				var error= req.__('validation_error');
+				res.status(401).send(error);
+			}
+		}
+		else
+		{
+			var follow_user = inputParams.userid;
+			var status = inputParams.status;
+				apimodel.userDetails(q,userid).then(function(results){
+				if(results.length > 0)
+				{
+					var update_array = {
+						'userid':results[0].a,
+						'username':results[0].username,
+						'description':results[0].description,
+						'address':results[0].address,
+						'profile_image':results[0].profileImage,
+					}
+
+					if(status == 0)
+					apimodel.updateFollow(q,update_array,follow_user).then(function(results){});
+					else
+					apimodel.removeFollow(q,follow_user,update_array.userid).then(function(results){});
+				}
+				})
+				apimodel.userDetails(q,follow_user).then(function(results){
+				if(results.length > 0)
+				{
+					var update_array = {
+						'userid':results[0].a,
+						'username':results[0].username,
+						'description':results[0].description,
+						'address':results[0].address,
+						'profile_image':results[0].profileImage,
+					}
+
+					if(status == 0)
+					apimodel.updateFollower(q,update_array,userid).then(function(results){	});
+					else
+					apimodel.removeFollower(q,userid,update_array.userid).then(function(results){	});
+				}
+				});
+					message.message = req.__('update_success');
+					message.details = inputParams;
+					res.status(200).send(message);
+			
+		}
+		}
+		else
+		{
+			res.status(validateResults.status).send(validateResults.message);
+		}
+
+	});
+});
 
 module.exports = router;

@@ -2,5 +2,6 @@
 "MG_USERS":"users",
 "MG_ADS":"ads",
 "MG_HASHTAGS":"hashtags",
-"MG_CITY":"cities"
+"MG_CITY":"cities",
+"MG_SETTINGS":"settings"
 }
