@@ -21,6 +21,21 @@ var fs = require('fs');
 	  res.status(200).json({ message: 'Connected!' });
 	});
 
+	router.post('/verify-token', (req, res) => {
+
+   	  	common.jwtTokenValidation(q,req).then(function(validateResults){
+
+	   	  	if(validateResults.status == 200)
+			{
+				res.status(200).json({ message: 'success!' , status :200 });
+			}
+			else
+			{
+				res.status(401).json({ message: 'failed!' , status :200 });
+			}
+		});
+	});
+
   router.post('/signup', function (req, res) {
 
   	var message = {};
@@ -124,7 +139,7 @@ color: 'white'}));
 								      expiresIn: 86400 // expires in 24 hours
 								    });
 
-								    imageName=userid+userid.split("").reverse().join("")+'.png';
+								    imageName=userid+userid.reverse().join("")+'.png';
 									apimodel.update_user(q,{profile_image:imageName},userid).then(function(results){
 									});
 
@@ -213,7 +228,7 @@ color: 'white'}));
 							   	var userid = results[0]._id;
 							   	console.log('user',userid);
 							    var token = jwt.sign({ id: userid },config.secret, {
-							      expiresIn: 86400 // expires in 24 hours
+							      expiresIn: 84600 // expires in 24 hours
 							    });
 								apimodel.update_user(q,update_array,userid).then(function(results){
 									    message = { auth: true, token: token };

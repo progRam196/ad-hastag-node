@@ -279,7 +279,7 @@ var forEach = require('async-foreach').forEach;
   	common.jwtTokenValidation(q,req).then(function(validateResults){
   		console.log(validateResults.status);
 
-		if(validateResults.status == 200 ||  validateResults.status == 401 )
+		if(validateResults.status == 200 ||  validateResults.status == 401 ||  validateResults.status == 402 )
 		{
 			try
 			{
@@ -287,10 +287,12 @@ var forEach = require('async-foreach').forEach;
 			var jwtDetails = validateResults.details;
 			var userid = '';
 
-			if(typeof(jwtDetaiils) != 'undefined')
+			console.log(jwtDetails);
+
+			if(typeof(jwtDetails) != 'undefined')
 			var userid = jwtDetails.id;
 
-			console.log("herere ad list");
+			console.log("herere ad list",userid);
 		  	var message = {};
 
 		  	var inputParams = req.body;

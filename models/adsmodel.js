@@ -274,7 +274,7 @@ exports.ads_list= function(q,userid,search){
 	'ad_status' : {'$nin':['B','T']}
 	};
 
-	if(typeof(user_id) != 'undefined' && user_id != '' )
+	if(typeof(userid) != 'undefined' && userid != '' )
 	{
 	match_array.user_id={'$ne':ObjectId(userid)};
 	}

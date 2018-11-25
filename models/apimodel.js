@@ -323,3 +323,47 @@ exports.removeFollow= function(q,checkuserId,userId){
 
 	 return deferred.promise;
 }
+
+
+exports.cityLists= function(q,data){
+	var deferred = q.defer();
+
+	if(typeof(data) != 'undefined')
+	{
+	var match_array = {'name':{'$regex':new RegExp(data)}};
+	}
+	else
+	{
+	var match_array = {};
+	}
+
+	// var collection = db.get().collection(t.MG_CITY);
+	// collection.find(match_array).limit(10).toArray(function(err, results) {
+
+	  var arguments = [
+		 {
+			'$match': match_array,
+		},
+		{
+			'$unwind':'cities'
+		},
+		 {
+			'$project':{
+				'_id':'cities._id',
+				'name':'cities.name',
+				'state_id':'cities.state_id',
+
+			}
+		},
+	];
+	var collection = db.get().collection(t.MG_CITY);
+	 collection.aggregate(arguments).toArray(function(err, results) {
+
+		console.log(err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
