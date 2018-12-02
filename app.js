@@ -105,7 +105,7 @@ var dbname = dbconfig.dbname;
 
 const url = 'mongodb://'+username+':'+password+'@'+host+':'+port+'/?authMechanism='+authMechanism+'&authSource='+authSource+'&ssl=false"';
 
-const url = "mongodb://hashtagad:1XeiqZcaXsYxnqRI@cluster0-shard-00-02-mdyn5.gcp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true
+//const url = "mongodb://hashtagad:1XeiqZcaXsYxnqRI@cluster0-shard-00-02-mdyn5.gcp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true
 
 db.connect(url,dbname,function(err) {
   if (err) {
@@ -132,7 +132,7 @@ db.connect(url,dbname,function(err) {
 //     console.log(insertarray);
 
   
-// apimodel.insertCity(q,insertarray).then(function(results){ });
+ //apimodel.insertCity(q,insertarray).then(function(results){ });
 
 
 // });

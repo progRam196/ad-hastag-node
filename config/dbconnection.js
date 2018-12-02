@@ -8,7 +8,11 @@ exports.connect = function(url,dbname, done) {
   console.log('jere');
   if (state.db) return done()
 
-  MongoClient.connect(url,dbname,function(err, client) {
+
+  var client = new MongoClient(url,{ useNewUrlParser: true });
+
+
+  client.connect(function(err, client) {
     if (err) return done(err)
     state.db = client.db(dbname);
 	//console.log('here',state.db);

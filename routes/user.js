@@ -70,25 +70,12 @@ var fs = require('fs');
 				apimodel.check_username_exists(q,username).then(function(usernameresults){
 					apimodel.check_phone_exists(q,phone).then(function(phoneresults){
 
-						if(emailresults > 0)
+						if(usernameresults > 0)
 						{
 							try
 							{
 							var error={};
-							error.email = req.__('email_exists');
-							res.status(401).send(error);
-							}
-							catch(err)
-							{
-								console.log(err);
-							}
-						}
-						else if(usernameresults > 0)
-						{
-							try
-							{
-							var error={};
-							error.username = req.__('username_exists');
+							error = req.__('username_exists');
 							res.status(401).send(error);
 							}
 							catch(err)
@@ -97,10 +84,23 @@ var fs = require('fs');
 							}
 
 						}
+						else if(emailresults > 0)
+						{
+							try
+							{
+							var error={};
+							error = req.__('email_exists');
+							res.status(401).send(error);
+							}
+							catch(err)
+							{
+								console.log(err);
+							}
+						}
 						else if(phoneresults > 0)
 						{
 							var error={};
-							error.phone = req.__('phone_exists');
+							error = req.__('phone_exists');
 							res.status(401).send(error);
 
 						}
@@ -112,8 +112,7 @@ var fs = require('fs');
 
 							  var colors = config.colors[Math.floor(Math.random() * config.colors.length)];
 							  var imageName = username+'.png';
-							  fs.writeFileSync(config.docroot+'/public/uploads/profile/'+imageName, text2png(username.charAt(0).toUpperCase(), {padding: 30, backgroundColor: colors,
-color: 'white'}));
+
 
 							  var insert_array = {
 							    username : username,
@@ -139,7 +138,9 @@ color: 'white'}));
 								      expiresIn: 86400 // expires in 24 hours
 								    });
 
-								    imageName=userid+userid.reverse().join("")+'.png';
+								    imageName=userid+userid+'.png';
+								    fs.writeFileSync(config.docroot+'/public/uploads/profile/'+imageName, text2png(username.charAt(0).toUpperCase(), {padding: 30, backgroundColor: colors,
+color: 'white'}));
 									apimodel.update_user(q,{profile_image:imageName},userid).then(function(results){
 									});
 
@@ -242,7 +243,7 @@ color: 'white'}));
 						}
 						else
 						{
-							message = req.__('failed');
+							message = req.__('username_pwd_failed');
 						    res.status(401).send(message);
 						}
 					}

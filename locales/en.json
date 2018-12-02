@@ -1,5 +1,14 @@
 {
 	"reset_email_sent": "Reset link sent to your registered email",	
 	"enter_valid_username": "Enter valid email or phone or username",
-	"password_reset_failed":"Reset url have expired"
+	"password_reset_failed":"Reset url have expired",
+	"failed":"Failed",
+	"validation_error":"Invalid Values",
+	"success":"Success",
+	"username_exists":"Username already exists",
+	"email_exists":"Email already exists",
+	"phone_exists":"Mobile Number already exists",
+	"username_pwd_failed":"Username or Password is wrong",
+	"update_success":"Updated Successfully",
+	"password_reset_success":"Password reset done!"
 }

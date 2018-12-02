@@ -32,5 +32,19 @@ var fs = require('fs');
 	})
   });
 
+  router.post('/contact-us', function (req, res) {
+
+  	var message = {};
+  	var inputParams = req.body;
+  	var insertArray = {
+  		'message':inputParams.message
+  	};
+
+	apimodel.insertEnquiry(q,insertArray).then(function(results){
+	message.details = results[0];
+	res.status(200).send(message);
+	})
+  });
+
 
 module.exports = router;

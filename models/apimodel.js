@@ -220,7 +220,7 @@ exports.insertCity= function(q,insertArray){
 	var deferred = q.defer();
 
 	var collection = db.get().collection(t.MG_CITY);
-	collection.insert(insertArray,function(err, results) {
+	collection.insertne(insertArray,function(err, results) {
 		//console.log(results);
 	 	deferred.resolve(results);
 		deferred.makeNodeResolver()
@@ -360,6 +360,21 @@ exports.cityLists= function(q,data){
 	 collection.aggregate(arguments).toArray(function(err, results) {
 
 		console.log(err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
+
+exports.insertEnquiry= function(q,insertArray){
+	var deferred = q.defer();
+
+	var collection = db.get().collection(t.MG_ENQUIRY);
+	collection.insert(insertArray,function(err, results) {
+		//console.log(results);
 	 	deferred.resolve(results);
 		deferred.makeNodeResolver()
 		result=null;
