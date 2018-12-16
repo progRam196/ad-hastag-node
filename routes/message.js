@@ -32,10 +32,63 @@ var forEach = require('async-foreach').forEach;
 		  	var UpdateArray = {
 		  		'message':inputParams.message,
 		  		'userid':ObjectId(userid),
-		  		'created_date':new Date()
+		  		'created_date':new Date(),
+		  		'message_id':ObjectId()
 		  	};
 
 		  	admodel.updateMessage(q,UpdateArray,adId).then(function(updateResults){
+		  		admodel.message_details(q,adId).then(function(messageResults){
+		  				var i =0 ;
+		  				messageResults.forEach(function(element) {
+		  				messageResults[i].profileImage = common.profileExists(element.user_profile);
+		  				i++;
+		  				})
+
+				  		message.message = req.__('success');
+						message.details = messageResults;
+						res.status(200).send(message);
+		  		})
+		  	})
+		  }
+		  catch(err)
+		  {
+		  	console.log(err);
+		  }
+		}
+		else
+		{
+			res.status(validateResults.status).send(validateResults.message);
+		}
+
+	});
+  });
+
+  router.post('/reply', function (req, res) {
+  	common.jwtTokenValidation(q,req).then(function(validateResults){
+
+		if(validateResults.status == 200)
+		{
+			try
+			{
+
+			var jwtDetails = validateResults.details;
+			console.log("herere");
+		  	var message = {};
+
+		  	var userid = jwtDetails.id;
+
+		  	var inputParams = req.body; 
+
+		  	var ID = inputParams.id;
+		  	var adId = inputParams.adid;
+
+		  	var UpdateArray = {
+		  		'message':inputParams.message,
+		  		'userid':ObjectId(userid),
+		  		'created_date':new Date()
+		  	};
+
+		  	admodel.updateReplyMessage(q,UpdateArray,ID).then(function(updateResults){
 		  		admodel.message_details(q,adId).then(function(messageResults){
 		  				var i =0 ;
 		  				messageResults.forEach(function(element) {

@@ -212,7 +212,7 @@ function normalizePort(val) {
 require('./websocket')(io);
 
 var port = normalizePort(process.env.PORT || '5000');
-app.set('port', port);
+//app.set('port', port);
 
 server.listen(port);
 

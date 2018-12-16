@@ -308,6 +308,8 @@ color: 'white'}));
 				var description = inputParams.description;
 				var address = inputParams.address;
 				var profileImage = inputParams.profileImage;
+				var businessName = inputParams.businessName;
+				var userType = inputParams.userType;
 
 		   		common.ImageUpload(q,profileImage,userid).then(function(imageName)
 		   		{
@@ -316,6 +318,8 @@ color: 'white'}));
 						phone:phone,
 						description:description,
 						address:address,
+						businessName:businessName,
+						userType:userType,
 						update_date:new Date()
 					};
 
@@ -383,7 +387,7 @@ color: 'white'}));
 						else
 						profiledetails[0].selfStatus = parseInt(0);
 
-						profiledetails[0].imgurl = config.baseurl+'public/uploads/profile/';
+						profiledetails[0].imgurl = config.baseurl+'/public/uploads/profile/';
 
 
 						delete profiledetails._id;

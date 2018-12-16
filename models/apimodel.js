@@ -138,7 +138,9 @@ exports.userDetails= function(q,userid){
 				'address': { $ifNull : ['$address','']},
 				'profileImage': { $ifNull : ['$profile_image','']},
 				'follower_list': { $ifNull : ['$follower_list',[]]},
-				'following_list': { $ifNull : ['$following_list',[]]}
+				'following_list': { $ifNull : ['$following_list',[]]},
+				'businessName': { $ifNull : ['$businessName',[]]},
+				'userType': { $ifNull : ['$userType',0]}
 			}
 		},
 	];

@@ -381,13 +381,17 @@ var forEach = require('async-foreach').forEach;
 
 	router.post('/detail/:id', function (req, res) {
 
+		console.log("herree");
+
   	common.jwtTokenValidation(q,req).then(function(validateResults){
 
-		if(validateResults.status == 200)
+		if(validateResults.status == 200 ||  validateResults.status == 401 ||  validateResults.status == 402 )
 		{
 
 			var jwtDetails = validateResults.details;
+			var userid= ''
 
+			if(typeof(validateResults.details) == "undefined")
 			var userid = jwtDetails.id;
 
 		  	var message = {};
@@ -413,6 +417,7 @@ var forEach = require('async-foreach').forEach;
 			  				i++;
 			  				})
 							message.message = req.__('success');
+							adresults[0].currentuserid= userid;
 							message.details = adresults[0];
 							message.details.message_list = messageResults;
 							res.status(200).send(message);

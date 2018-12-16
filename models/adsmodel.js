@@ -367,6 +367,26 @@ exports.updateMessage= function(q,message_array,adId){
 	 return deferred.promise;
 }
 
+exports.updateReplyMessage= function(q,message_array,adId){
+	var deferred = q.defer();
+
+	let match_array = {
+		'message_list.message_id':ObjectId(adId),
+	};
+
+	console.log(match_array);
+	var collection = db.get().collection(t.MG_ADS);
+	collection.update(match_array,{'$push':{'reply_list':message_array}},{ upsert: false }
+,function(err, results) {
+		console.log('err',err);
+	 	deferred.resolve(results);
+		deferred.makeNodeResolver()
+		result=null;
+	  });
+
+	 return deferred.promise;
+}
+
 exports.message_details= function(q,adId){
 	var deferred = q.defer();
 
@@ -397,6 +417,7 @@ exports.message_details= function(q,adId){
 				'message_create_date':'$message_list.created_date',
 				'user_profile':'$user.profile_image',
 				'username':'$user.username',
+				'message_id':'$message_list.message_id'
 	
 			}
 		},
